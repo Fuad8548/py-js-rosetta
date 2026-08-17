@@ -79,8 +79,6 @@ together, not a prerequisite for anything earlier.
 ```bash
 git clone https://github.com/<your-username>/py-js-rosetta.git
 cd py-js-rosetta/book/01-foundations/1.1-variables-types-control-flow
-python python/example.py
-node js/example.js
 ```
 
 Every subsection works the same way — `cd` in, run both examples, read the

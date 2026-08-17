@@ -144,22 +144,22 @@ We need static for three critical reasons:
     - **Factory Methods (Creating objects differently)**: Sometimes you want to create a Book instance from an API response or a JSON string. You cannot use a regular instance method because the object does not exist yet. (see below:)
     
 ```javascript
-    class Book {
-        constructor(title, author) {
-            this.title = title;
-            this.author = author;
-        }
-
-        // A static factory method
-        static fromJSON(jsonString) {
-            const data = JSON.parse(jsonString);
-            return new Book(data.t, data.a); // Returns a new instance
-        }
+class Book {
+    constructor(title, author) {
+        this.title = title;
+        this.author = author;
     }
 
-    // You call it directly on the class to manufacture an object
-    const b3 = Book.fromJSON('{"t": "Deep Work", "a": "Cal Newport"}');
-    ```
+    // A static factory method
+    static fromJSON(jsonString) {
+        const data = JSON.parse(jsonString);
+        return new Book(data.t, data.a); // Returns a new instance
+    }
+}
+
+// You call it directly on the class to manufacture an object
+const b3 = Book.fromJSON('{"t": "Deep Work", "a": "Cal Newport"}');
+```
 
 |                               |              company = "TechCorp" (no static)              |      static company = "TechCorp"       |
 | :---------------------------: | :--------------------------------------------------------: | :------------------------------------: |
@@ -192,7 +192,7 @@ const t = Temperature.fromFahrenheit(98.6);          // factory method -- builds
 console.log(Math.round(t.celsius * 10) / 10);          // 37
 ```
 
-Python's equivalent `@staticmethod` and `@classmethod`:
+## Python's `@staticmethod` and `@classmethod`:
 
 ```python
 class Temperature:
