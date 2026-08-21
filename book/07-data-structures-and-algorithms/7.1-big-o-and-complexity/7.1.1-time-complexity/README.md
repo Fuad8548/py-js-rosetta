@@ -43,9 +43,11 @@ the smaller term gets swallowed as `n` grows large.
 import time
 
 N = 300_000
-arr = list(range(N))
+
+# --- INSERTION ---
 
 # Front insertion - O(n) - everything after index 0 must shift right
+arr = list(range(N))
 start = time.perf_counter()
 arr.insert(0, 999)
 print("insert(0, x):", time.perf_counter() - start, "seconds")
@@ -55,12 +57,27 @@ arr2 = list(range(N))
 start = time.perf_counter()
 arr2.append(999)
 print("append(x):   ", time.perf_counter() - start, "seconds")
+
+# --- REMOVAL ---
+
+# Front removal - O(n) - everything after index 0 must shift left
+arr3 = list(range(N))
+start = time.perf_counter()
+arr3.pop(0)
+print("pop(0):      ", time.perf_counter() - start, "seconds")
+
+# End removal - O(1) - nothing after the last element to shift
+arr4 = list(range(N))
+start = time.perf_counter()
+arr4.pop()
+print("pop():       ", time.perf_counter() - start, "seconds")
 ```
 
 **Notes:**
 
 - `list.insert(0, x)` and `list.append(x)` look similarly simple, but
-  cost completely different amounts of work under the hood.
+  cost completely different amounts of work under the hood. The same
+  is true of `pop(0)` vs `pop()` — same pairing, mirrored for removal.
 - This isn't a Python-specific quirk — it comes from how a **dynamic
   array** (contiguous memory) is stored, which is true in most
   languages.
@@ -69,11 +86,16 @@ print("append(x):   ", time.perf_counter() - start, "seconds")
   guarantee every single time — occasionally the spare room runs out
   and Python has to reallocate a bigger block and copy everything
   over. Averaged over many calls, this still counts as O(1).
+- `pop()` has no such "occasional spike" — removing the last element
+  never requires reallocation, only `append()` does. So `pop()` is
+  O(1) *every single time*, not just amortized.
 
 ## JavaScript
 
 ```javascript
-const N = 300000;
+const N = 300_000;
+
+// --- INSERTION ---
 
 // Front insertion - O(n) - same shifting cost as Python's insert(0, x)
 let arr = Array.from({length: N}, (_, i) => i);
@@ -86,18 +108,37 @@ let arr2 = Array.from({length: N}, (_, i) => i);
 start = process.hrtime.bigint();
 arr2.push(999);
 console.log("push(x):   ", Number(process.hrtime.bigint() - start) / 1e6, "ms");
+
+// --- REMOVAL ---
+
+// Front removal - O(n) - same shifting cost as Python's pop(0)
+let arr3 = Array.from({length: N}, (_, i) => i);
+start = process.hrtime.bigint();
+arr3.shift();
+console.log("shift():   ", Number(process.hrtime.bigint() - start) / 1e6, "ms");
+
+// End removal - O(1) - same as Python's pop()
+let arr4 = Array.from({length: N}, (_, i) => i);
+start = process.hrtime.bigint();
+arr4.pop();
+console.log("pop():     ", Number(process.hrtime.bigint() - start) / 1e6, "ms");
 ```
 
 **Notes:**
 
 - `unshift()` is JavaScript's equivalent of Python's `insert(0, x)` —
-  same O(n) cost, same reason (everything shifts).
+  same O(n) cost, same reason (everything shifts). `shift()` is the
+  equivalent of Python's `pop(0)` — same O(n) removal cost.
 - `push()` is JavaScript's equivalent of Python's `append()` — same
-  O(1) amortized cost.
+  O(1) amortized cost. `pop()` matches Python's `pop()` — O(1), no
+  amortization needed, since removing the last element never
+  triggers a reallocation.
 - **Gotcha:** single-call microbenchmarks in JS are noisy due to V8's
-  JIT compiler not being "warmed up" yet. For a real comparison,
-  average many repeated calls rather than trusting one single
-  measurement — see Exercise 2.
+  JIT compiler not being "warmed up" yet. The four numbers above are
+  each a *single* call, so don't be surprised if `push` occasionally
+  looks slower than `unshift` in one run — that's noise, not a real
+  result. For a trustworthy comparison, average many repeated calls
+  rather than trusting one single measurement — see Exercise 2.
 
 ## Side-by-Side
 
@@ -127,8 +168,10 @@ console.log("push(x):   ", Number(process.hrtime.bigint() - start) / 1e6, "ms");
 
 ## Exercises
 
-1. Modify the Python example to test `pop(0)` vs `pop()` (no argument)
-   at `N = 500_000`. Which is faster, and by roughly what factor?
+1. Re-run the Python `pop(0)` vs `pop()` comparison above at
+   `N = 1_000_000` instead of `300_000`. Does the *ratio* between them
+   grow, shrink, or stay about the same as `N` grows? What does that
+   tell you about what "O(n)" actually predicts as data scales?
 2. The JavaScript example above uses a single call, which is noisy.
    Rewrite it to run the operation 1,000 times in a loop (after a
    warm-up loop of ~20 calls) and report the **average** time per
