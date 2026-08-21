@@ -348,21 +348,14 @@ p = Player("Messi")
 print(p.__secret)    # AttributeError! Doesn't exist under this name
 print(p._Player__secret) # Messi -- Python renamed it internally to _ClassName__attr
 ```
-Python mangles the name into _Player__secret behind the scenes, mainly to avoid accidental name clashes in inheritance - it's not really "true privacy," it's more of a collision-avoidance trick. 
+Python mangles the name into `_Player__secret` behind the scenes, mainly to avoid accidental name clashes in inheritance - it's not really "true privacy," it's more of a collision-avoidance trick. 
 
 
 ## Exercises
 
-1. In the Python example, try `s.__goals = 5.0` (bypassing the setter) from
-   outside the class. Does it raise an error? Now check
-   `s._Player__goals` afterward — did the *real* private value change, or
-   did you just create a brand-new public attribute called `__goals`?
-2. In JS, write a `reset()` method that sets `#goals` back to `null`, to
-   replace the deleter functionality JS can't hook via `delete`.
-3. Add a `version` getter (no setter) to both `BaseConfig`/`AppConfig` and
-   a JS equivalent using `#version`, to reinforce that read-only computed
-   properties work the same way regardless of whether the underlying field
-   is public, protected, or private.
+1. In the Python example, try `p.__goals = 50` (bypassing the setter) from outside the class. Does it raise an error? Now check `p._Player__goals` afterward — did the *real* private value change, or did you just create a brand-new public attribute called `__goals`?
+2. In JS, write a `reset()` method that sets `#goals` back to `null`, to replace the deleter functionality JS can't hook via `delete`.
+3. Add a `version` getter (no setter) to both `BaseConfig`/`AppConfig` and a JS equivalent using `#version`, to reinforce that read-only computed properties work the same way regardless of whether the underlying field is public, protected, or private.
 
 ---
 [← Previous: 4.1 Classes & Objects](../4.1-classes-constructors/) · [Back to Part 4](../) · [Next → 4.3 Inheritance](../4.3-inheritance/)

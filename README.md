@@ -71,13 +71,10 @@ together, not a prerequisite for anything earlier.
 - [6.2 Async: async/await vs Promises](book/06-advanced-patterns/6.2-async/)
 - [6.3 Decorators vs Higher-Order Functions](book/06-advanced-patterns/6.3-decorators/)
 
-### Part 7 — Applied Projects (optional capstones)
-- [Bangla News Aggregator & Summarizer](book/07-applied-projects/news-aggregator/)
-
 ## Getting started
 
 ```bash
-git clone https://github.com/<your-username>/py-js-rosetta.git
+git clone https://github.com/Fuad8548/py-js-rosetta.git
 cd py-js-rosetta/book/01-foundations/1.1-variables-types-control-flow
 ```
 
