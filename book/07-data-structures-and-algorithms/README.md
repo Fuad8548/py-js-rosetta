@@ -19,8 +19,8 @@ Python → JavaScript → Side-by-Side → When to Reach for This → Exercises.
 - [7.1 Big-O & Complexity](./7.1-big-o-and-complexity/)
   - [7.1.1 Time Complexity](./7.1-big-o-and-complexity/7.1.1-time-complexity/) ✅
 - [7.2 Searching](./7.2-searching/)
-  - 7.2.1 Linear Search
-  - 7.2.2 Binary Search
+  - [7.2.1 Linear Search](./7.2-searching/7.2.1-linear-search/) ✅
+  - [7.2.2 Binary Search](./7.2-searching/7.2.2-binary-search/) ✅
 - [7.3 Linked Lists](./7.3-linked-lists/)
   - 7.3.1 Singly Linked List
   - 7.3.2 Doubly Linked List
@@ -49,9 +49,10 @@ Python → JavaScript → Side-by-Side → When to Reach for This → Exercises.
 
 ## Status
 
-🚧 **Work in progress.** 7.1.1 is fully written; the rest are scaffolded
-stubs. See [Issues](https://github.com/Fuad8548/py-js-rosetta/issues) for
-progress tracking.
+🚧 **Work in progress.** 7.1.1, 7.2.1, and 7.2.2 are fully written; the
+rest are scaffolded stubs. See
+[Issues](https://github.com/Fuad8548/py-js-rosetta/issues) for progress
+tracking.
 
 ---
 
