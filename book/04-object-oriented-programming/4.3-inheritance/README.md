@@ -241,7 +241,7 @@ class Teacher extends Person {}   // doesn't redefine species()
 console.log(Teacher.species()); // "Homo sapiens" -- inherited from Person
 ```
 
-**Compendium**: In Python, a method is just a function attached to a class, and passing the instance (self) explicitly to the class method works. In JavaScript, `Person.introduce` expects `introduce` to be on the `Parent` class itself, which it is not. Writing `class Person { introduce() { ... } }` attaches the introduce method to `Person.prototype`. That's why you will get `TypeError: Person.introduce is not a function`. To fix that, manually bind the `this` context to your instance `t` using `call()`: `Person.prototype.introduce.call(t)`. Or change the parent method to `static` if you want the exact syntax we tried before, same as python. 
+**Compendium**: In Python, a method is just a function attached to a class, and passing the instance (self) explicitly to the class method works. In JavaScript, `Person.introduce` expects `introduce` to be on the `Parent` class itself, which it is not. Writing `class Person { introduce() { ... } }` attaches the introduce method to `Person prototype`. That's why you will get `TypeError: Person.introduce is not a function`. To fix that, manually bind the `this` context to your instance `t` using `call()`: `Person.prototype.introduce.call(t)`. Or change the parent method to `static` if you want the exact syntax we tried before, same as python. 
 
 ## Exercises
 
