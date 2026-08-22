@@ -38,8 +38,6 @@ print(isinstance(t, Person))     # True -- a Teacher IS a Person
 - `super().__init__(name, age)` calls `Person`'s constructor to handle the part `Teacher` doesn't need to repeat, then `Teacher` adds `self.subject` on top. Without this call, `Teacher` instances would never get `.name` or `.age` at all.
 - `introduce()` is defined in both classes. Python always uses the **closest** definition — `Teacher`'s own `introduce()` — unless `Teacher` doesn't define one, in which case it falls back to `Person`'s.
 - `isinstance(t, Person)` is `True` — inheritance means "is a," not just "reuses code from."
-- `super().introduce()`: Used inside child methods. Dynamically finds the parent class.
-- `Person.introduce(t)`: Used outside the class. Hardcodes the specific parent class you want to bypass to.
 
 ## JavaScript: Single Inheritance
 
@@ -66,17 +64,15 @@ class Teacher extends Person {
   }
 }
 
-const t = new Teacher("Rina", 34, "Physics");
-console.log(t.introduce());          // "Hi, I'm Rina, and I teach Physics."
-console.log(t.name, t.age);            // "Rina 34"
+const t = new Teacher("Reagan", 34, "Physics");
+console.log(t.introduce());          // "Hi, I'm Reagan, and I teach Physics."
+console.log(t.name, t.age);            // "Reagan 34"
 console.log(t instanceof Person);        // true
 ```
 
 **Notes:**
-- `class Teacher extends Person` — same idea as Python's parentheses,
-  different keyword.
-- `super(name, age)` must be called **before** you can use `this` anywhere
-  in a child constructor — and JS actually enforces this:
+- `class Teacher extends Person` — same idea as Python's parentheses, different keyword.
+- `super(name, age)` must be called **before** you can use `this` anywhere in a child constructor — and JS actually enforces this:
 
 ```javascript
 class Teacher extends Person {
@@ -85,14 +81,14 @@ class Teacher extends Person {
     super(name);
   }
 }
-new Teacher("Rina", "Physics");
-// ReferenceError: Must call super constructor in derived class before
-// accessing 'this' or returning from derived constructor
+
+new Teacher("Reagan", "Physics");
+// ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor
 ```
 
-  Python has **no equivalent restriction** — you're free to do work before
-  calling `super().__init__(...)`, though it's usually still bad practice.
+Python has **no equivalent restriction** — you're free to do work before calling `super().__init__(...)`, though it's usually still bad practice.
 - `instanceof` is JS's equivalent of `isinstance()`.
+
 
 ## Side-by-Side
 
@@ -106,19 +102,13 @@ new Teacher("Rina", "Physics");
 
 ## When to Reach for This
 
-Use inheritance when a child class genuinely **is a specialized version**
-of the parent — a `Teacher` is a `Person`, an `AdminUser` is a `User`. If
-you're inheriting just to reuse a couple of unrelated methods, that's
-usually a sign you want **composition** instead — give the class an
-instance of the other class as an attribute, rather than inheriting from
-it.
+Use inheritance when a child class genuinely **is a specialized version** of the parent — a `Teacher` is a `Person`, an `AdminUser` is a `User`. If you're inheriting just to reuse a couple of unrelated methods, that's usually a sign you want **composition** instead — give the class an instance of the other class as an attribute, rather than inheriting from it.
 
 ---
 
 ## Going Further: Multiple Inheritance (Python) vs the Prototype Chain (JS)
 
-This is genuinely asymmetric between the two languages, worth knowing
-before you hit it in real code.
+This is genuinely asymmetric between the two languages, worth knowing before you hit it in real code.
 
 **Python supports multiple inheritance** — a class can list more than one
 parent:
@@ -152,19 +142,11 @@ print(Triathlete.__mro__)
 # (<class 'Triathlete'>, <class 'Swimmer'>, <class 'Runner'>, <class 'object'>)
 ```
 
-Both `Swimmer` and `Runner` define `train()` and `compete()`. Python
-resolves this using the **Method Resolution Order (MRO)** — a precomputed
-list, following an algorithm called C3 linearization, that determines
-exactly which class's version wins. `Swimmer` comes first in the
-parentheses, so its methods win across the board. `Triathlete.__mro__`
-lets you see this order directly — nothing is hidden or guessed at
-runtime.
+Both `Swimmer` and `Runner` define `train()` and `compete()`. Python resolves this using the **Method Resolution Order (MRO)** — a precomputed list, following an algorithm called C3 linearization, that determines exactly which class's version wins. `Swimmer` comes first in the parentheses, so its methods win across the board. `Triathlete.__mro__` lets you see this order directly — nothing is hidden or guessed at
+runtime. 
 
 **JavaScript's `extends` only supports single inheritance** —
-`class Triathlete extends Swimmer, Runner` isn't legal syntax, so this
-exact conflict can't happen with classes. If you need to combine behavior
-from multiple independent sources, the idiomatic JS pattern is a
-**mixin** — a function that takes a base class and returns a new class
+`class Triathlete extends Swimmer, Runner` isn't legal syntax, so this exact conflict can't happen with classes. If you need to combine behavior from multiple independent sources, the idiomatic JS pattern is a **mixin** — a function that takes a base class and returns a new class
 extending it:
 
 ```javascript
@@ -173,6 +155,7 @@ const Swimmer = (Base) => class extends Base {
     return "Swimming laps";
   }
 };
+
 const Runner = (Base) => class extends Base {
   run() {
     return "Running sprints";
@@ -184,16 +167,11 @@ class Triathlete extends Swimmer(Runner(Athlete)) {}
 
 const t = new Triathlete();
 console.log(t.swim());  // "Swimming laps"
-console.log(t.run());     // "Running sprints"
+console.log(t.run());   // "Running sprints"
 ```
 
-Each mixin wraps the previous class in a new layer of the (still single!)
-prototype chain — `Triathlete → Swimmer-wrapped → Runner-wrapped →
-Athlete → Object`. There's no MRO-style conflict to resolve because each
-mixin contributes different method names here; if two mixins *did* define
-the same method name, the outermost one (applied last, closest to
-`Triathlete`) would simply win — a single, predictable chain, not a
-computed resolution order.
+Each mixin wraps the previous class in a new layer of the (still single!) prototype chain — `Triathlete → Swimmer-wrapped → Runner-wrapped → Athlete → Object`. There's no MRO-style conflict to resolve because each
+mixin contributes different method names here; if two mixins *did* define the same method name, the **outermost one** (applied last, closest to `Triathlete`) would simply win — a single, predictable chain, not a computed resolution order.
 
 | Aspect                          | Python                                                    | JavaScript                                                              |
 | ------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------- |
@@ -202,18 +180,127 @@ computed resolution order.
 | Combining independent behaviors | Multiple inheritance (use cautiously)                     | Mixins — functions wrapping a base class                                |
 | Inspect the resolution order    | `Triathlete.__mro__`                                      | Manually: `Object.getPrototypeOf()`, walked one link at a time          |
 
+
+## A Gotcha: Calling an Instance Method "Unbound," Outside an Instance
+
+In Python, you can call an instance method directly on the class, passing the instance in yourself:
+
+```python
+t = Person("Reagan", 34)
+print(Person.introduce(t))   # works fine -- "self" is just passed explicitly
+```
+
+Try the equivalent in JS and it breaks:
+
+```javascript
+const t = new Person("Reagan", 34);
+console.log(Person.introduce(t));
+// TypeError: Person.introduce is not a function
+```
+
+**Why:** in JS, instance methods live on `Person.prototype`, not on `Person` itself. Check for yourself:
+
+```javascript
+console.log(Object.getOwnPropertyNames(Person));           // ['length', 'name', 'prototype']
+console.log(Object.getOwnPropertyNames(Person.prototype));  // ['constructor', 'introduce']
+```
+
+`introduce` simply isn't a property of `Person` — it's only reachable through `Person.prototype`. To call it this way in JS, you have to reach into the prototype explicitly using `.call()` or `.apply()`:
+
+```javascript
+Person.prototype.introduce.call(t);   // "Hi, I'm Reagan, 34 years old."
+Person.prototype.introduce.apply(t);   // same result -- apply() takes args as an array
+```
+
+This is, not coincidentally, exactly what `super.methodName()` does for you automatically inside a subclass — it's syntactic sugar over `Parent.prototype.methodName.call(this)`.
+
+## Static Methods
+To bind `introduce()` with `Person` (the class), not with `Person.prototype`, you have to use `static` methods - for instances can't call it the normal way anymore. 
+
+```python
+class Person:
+    @staticmethod
+    def species():
+        return "Homo sapiens"
+
+class Teacher(Person):
+    pass   # doesn't redefine species()
+
+print(Teacher.species())   # "Homo sapiens" -- inherited from Person
+```
+
+```javascript
+class Person {
+  static species() {
+    return "Homo sapiens";
+  }
+}
+
+class Teacher extends Person {}   // doesn't redefine species()
+
+console.log(Teacher.species()); // "Homo sapiens" -- inherited from Person
+```
+
+**Compendium**: In Python, a method is just a function attached to a class, and passing the instance (self) explicitly to the class method works. In JavaScript, `Person.introduce` expects `introduce` to be on the `Parent` class itself, which it is not. Writing `class Person { introduce() { ... } }` attaches the introduce method to `Person.prototype`. That's why you will get `TypeError: Person.introduce is not a function`. To fix that, manually bind the `this` context to your instance `t` using `call()`: `Person.prototype.introduce.call(t)`. Or change the parent method to `static` if you want the exact syntax we tried before, same as python. 
+
 ## Exercises
 
-1. Swap the parent order to `class Triathlete(Runner, Swimmer):` and
-   predict what `t.train()` will print *before* running it. Check
-   `Triathlete.__mro__` to confirm.
-2. In the JS mixin example, add a `swim()` method to `Runner` too (so both
-   mixins define `swim()`). Which one wins when you call `t.swim()`?
-   Explain why, referencing the order the mixins were applied.
-3. Rewrite the Python `Teacher`/`Person` example so `Teacher.introduce()`
-   calls `Person`'s original version *and* adds to it — i.e.
-   `super().introduce() + " I specialize in Physics."` Do the same in JS
-   with `super.introduce()`.
+1. Swap the parent order to `class Triathlete(Runner, Swimmer):` and predict what `t.train()` will print *before* running it. Check `Triathlete.__mro__` to confirm.
+2. In the JS mixin example, add a `swim()` method to `Runner` too (so both mixins define `swim()`). Which one wins when you call `t.swim()`? Explain why, referencing the order the mixins were applied.
+3. Rewrite the Python `Teacher`/`Person` example to inherit parent's `introduce()` method and combine it to child's method by using `super().introduce()`. `t.introduce()` should return "**Hi, I'm Reagan, 34 years old. I teach Physics**". And also access the parent's method outside the child class as `Person.introduce(t)`. Try both cases for JS with `super.introduce()` and `Person.introduce(t)`. Have you seen any difference? Why?
+4. In JS, try `Teacher.prototype.introduce.call(t)` where `t` is a `Teacher` instance that overrides `introduce()`. Which version runs — `Person`'s or `Teacher`'s? Now try `Person.prototype.introduce.call(t)` directly. Explain the difference.
 
 ---
 [← Previous: 4.2 Encapsulation](../4.2-encapsulation/) · [Back to Part 4](../) · [Next → 4.4 Dunder Methods](../4.4-dunder-methods/)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Person {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  introduce() {
+    return `Hi, I'm ${this.name}, ${this.age} years old.`;
+  }
+}
+
+class Teacher extends Person {
+  constructor(name, age, subject) {
+    super(name, age); // call the parent's constructor
+    this.subject = subject;
+  }
+
+  introduce() { // override -- Teacher's version wins
+    return `${super.introduce()} I teach ${this.subject}.`;
+  }
+}
+
+const t = new Teacher("Reagan", 34, "Physics");
+console.log(t.introduce());          // "Hi, I'm Reagan, and I teach Physics."
+console.log(Person.introduce(t));
+
+
+
+
+
+static method 
+
+
+prototype call
